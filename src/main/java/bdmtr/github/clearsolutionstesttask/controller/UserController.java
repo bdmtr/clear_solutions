@@ -34,7 +34,7 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping
+    @PostMapping(path = "/add")
     @Operation(description = "Add a new user")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "User successfully created")})
     public ResponseEntity<UserResponse> register(@RequestBody @Valid UserRequest userRequest) {
