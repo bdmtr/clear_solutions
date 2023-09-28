@@ -8,9 +8,9 @@ RESTful API based on the web Spring Boot application: controller, responsible fo
 | Endpoint           | Http method | Action                                   | Input                                                   |
 |--------------------|-------------|------------------------------------------|---------------------------------------------------------|
 | /api/v1/users/add  | POST	       | Add new User                             | Request body: JSON                                      |
-| /api/v1/users/{id} | PATCH	      | Update one and more user properties by id | Path variable: user id; Request body: JSON              |
-| /api/v1/users/{id}        | PUT         | Update all user properties by id         | Path variable: user id; id Request body: JSON              |
-| /api/v1/users/{id}        | DELETE	     | Delete user by id                        | Path variable: user id                                  |
+| /api/v1/users/{id} | PATCH	      | Update one and more user properties by id | Path variable: id; Request body: JSON              |
+| /api/v1/users/{id}        | PUT         | Update all user properties by id         | Path variable: id; Request body: JSON              |
+| /api/v1/users/{id}        | DELETE	     | Delete user by id                        | Path variable: id                                  |
 | /api/v1/users/dates       | GET	        | Search for users by birthdate range      | Request parameter: fromDate; Request parameter: fromDate |
 
 
