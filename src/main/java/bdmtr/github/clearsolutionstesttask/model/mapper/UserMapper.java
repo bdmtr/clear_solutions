@@ -1,11 +1,12 @@
 package bdmtr.github.clearsolutionstesttask.model.mapper;
 
 import bdmtr.github.clearsolutionstesttask.model.entity.User;
-import bdmtr.github.clearsolutionstesttask.model.request.UserResponse;
-import bdmtr.github.clearsolutionstesttask.model.response.UserRequest;
+import bdmtr.github.clearsolutionstesttask.model.response.UserResponse;
+import bdmtr.github.clearsolutionstesttask.model.request.UserRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Component;
+
 
 @Component
 @Tag(name = "UserMapper", description = "Class is responsible for mapping between User entities and DTO")

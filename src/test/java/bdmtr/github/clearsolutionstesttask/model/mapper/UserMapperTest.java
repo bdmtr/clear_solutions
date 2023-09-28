@@ -2,8 +2,8 @@ package bdmtr.github.clearsolutionstesttask.model.mapper;
 
 import bdmtr.github.clearsolutionstesttask.model.entity.User;
 
-import bdmtr.github.clearsolutionstesttask.model.request.UserResponse;
-import bdmtr.github.clearsolutionstesttask.model.response.UserRequest;
+import bdmtr.github.clearsolutionstesttask.model.response.UserResponse;
+import bdmtr.github.clearsolutionstesttask.model.request.UserRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -2,8 +2,8 @@ package bdmtr.github.clearsolutionstesttask.controller;
 
 import bdmtr.github.clearsolutionstesttask.model.entity.User;
 import bdmtr.github.clearsolutionstesttask.model.mapper.UserMapper;
-import bdmtr.github.clearsolutionstesttask.model.request.UserResponse;
-import bdmtr.github.clearsolutionstesttask.model.response.UserRequest;
+import bdmtr.github.clearsolutionstesttask.model.response.UserResponse;
+import bdmtr.github.clearsolutionstesttask.model.request.UserRequest;
 import bdmtr.github.clearsolutionstesttask.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;

@@ -1,4 +1,4 @@
-package bdmtr.github.clearsolutionstesttask.model.response;
+package bdmtr.github.clearsolutionstesttask.model.request;
 
 import bdmtr.github.clearsolutionstesttask.util.ValidateBirthdate;
 import io.swagger.v3.oas.annotations.media.Schema;
