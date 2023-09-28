@@ -34,7 +34,6 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-
     @PostMapping(path = "/add")
     @Operation(description = "Add a new user")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "User successfully created")})
