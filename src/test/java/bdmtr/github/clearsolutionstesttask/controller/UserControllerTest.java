@@ -1,140 +1,118 @@
 package bdmtr.github.clearsolutionstesttask.controller;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
+import static org.hamcrest.Matchers.hasSize;
 
-import bdmtr.github.clearsolutionstesttask.model.entity.User;
-import bdmtr.github.clearsolutionstesttask.model.mapper.UserMapper;
-import bdmtr.github.clearsolutionstesttask.model.request.UserRequest;
-import bdmtr.github.clearsolutionstesttask.model.response.UserResponse;
-import bdmtr.github.clearsolutionstesttask.service.UserService;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.test.annotation.Rollback;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
+
 
 @SpringBootTest
+@AutoConfigureMockMvc
+
 public class UserControllerTest {
 
-    @InjectMocks
-    private UserController userController;
+    @Autowired
+    private WebApplicationContext webApplicationContext;
 
-    @Mock
-    private UserService userService;
+    private final String jsonRequest = "{ \"email\": \"user@gmail.com\", \"firstName\": \"John\", \"lastName\": \"Userman\", \"birthdate\": \"1998-01-17\" }";
 
-    @Mock
-    private UserMapper userMapper;
+    @Autowired
+    private MockMvc mockMvc;
 
-    private UserRequest userRequest;
-    private User user;
-    private UserResponse userResponse;
 
     @BeforeEach
     void setUp() {
-        userRequest = new UserRequest();
-        userRequest.setEmail("user@gmail.com");
-        userRequest.setFirstName("John");
-        userRequest.setLastName("Userman");
-        userRequest.setBirthdate(LocalDate.of(1998, 1, 15));
-
-        user = new User();
-        user.setId(1L);
-        user.setEmail("user@gmail.com");
-        user.setFirstName("John");
-        user.setLastName("Userman");
-        user.setBirthdate(LocalDate.of(1998, 1, 15));
-
-        userResponse = new UserResponse();
-        userResponse.setId(1L);
-        userResponse.setEmail("user@gmail.com");
-        userResponse.setFirstName("John");
-        userResponse.setLastName("Userman");
-        userResponse.setBirthdate(LocalDate.of(1998, 1, 15));
+        this.mockMvc = MockMvcBuilders.webAppContextSetup(webApplicationContext).build();
     }
 
     @Test
-    public void testRegister() {
-        when(userMapper.toModel(any(UserRequest.class))).thenReturn(user);
-        when(userService.save(any(User.class))).thenReturn(user);
-        when(userMapper.toDto(any(User.class))).thenReturn(userResponse);
-        ResponseEntity<UserResponse> responseEntity = userController.register(userRequest);
-        assertEquals(HttpStatus.CREATED, responseEntity.getStatusCode());
-        assertEquals(userResponse, responseEntity.getBody());
-        verify(userMapper).toModel(any(UserRequest.class));
-        verify(userService).save(any(User.class));
-        verify(userMapper).toDto(any(User.class));
-    }
-
-
-    @Test
-    public void testPatch() {
-        when(userMapper.toModel(userRequest)).thenReturn(user);
-        when(userService.update(anyLong(), any(User.class))).thenReturn(user);
-        when(userMapper.toDto(user)).thenReturn(userResponse);
-        ResponseEntity<UserResponse> responseEntity = userController.patch(1L, userRequest);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(userResponse, responseEntity.getBody());
-        verify(userMapper).toModel(userRequest);
-        verify(userService).update(1L, user);
-        verify(userMapper).toDto(user);
+    @Transactional
+    @Rollback(true)
+    public void testAddUserNew() throws Exception {
+        mockMvc.perform(post("/api/v1/users/")
+                        .contentType("application/json")
+                        .content(jsonRequest))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.email").value("user@gmail.com"))
+                .andExpect(jsonPath("$.firstName").value("John"))
+                .andExpect(jsonPath("$.lastName").value("Userman"));
     }
 
     @Test
-    public void testUpdate() {
-        when(userMapper.toModel(userRequest)).thenReturn(user);
-        when(userService.update(anyLong(), any(User.class))).thenReturn(user);
-        when(userMapper.toDto(user)).thenReturn(userResponse);
-        ResponseEntity<UserResponse> responseEntity = userController.update(1L, userRequest);
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(userResponse, responseEntity.getBody());
-        verify(userMapper).toModel(userRequest);
-        verify(userService).update(1L, user);
-        verify(userMapper).toDto(user);
+    @Transactional
+    @Rollback(true)
+    public void testUpdateSomeUserFields() throws Exception {
+        String jsonRequest = "{ \"email\": \"updated_user@gmail.com\", \"firstName\": \"Updated\", \"lastName\": \"User\", \"birthdate\": \"1990-05-20\" }";
+        mockMvc.perform(patch("/api/v1/users/{id}", 1L) // Replace 1L with the actual user ID
+                        .contentType("application/json")
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("updated_user@gmail.com"))
+                .andExpect(jsonPath("$.firstName").value("Updated"))
+                .andExpect(jsonPath("$.lastName").value("User"))
+                .andExpect(jsonPath("$.birthdate").value("1990-05-20"));
     }
 
     @Test
-    public void testDelete() {
-        ResponseEntity<Void> responseEntity = userController.delete(user.getId());
-        assertEquals(HttpStatus.NO_CONTENT, responseEntity.getStatusCode());
-        verify(userService).delete(user.getId());
+    @Transactional
+    @Rollback(true)
+    public void testUpdateAllUserFields() throws Exception {
+        String jsonRequest = "{ \"email\": \"updated_user@gmail.com\", \"firstName\": \"Updated\", \"lastName\": \"User\", \"birthdate\": \"1990-05-20\" }";
+        mockMvc.perform(put("/api/v1/users/{id}", 1L) // Replace 1L with the actual user ID
+                        .contentType("application/json")
+                        .content(jsonRequest))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.email").value("updated_user@gmail.com"))
+                .andExpect(jsonPath("$.firstName").value("Updated"))
+                .andExpect(jsonPath("$.lastName").value("User"))
+                .andExpect(jsonPath("$.birthdate").value("1990-05-20"));
     }
 
     @Test
-    public void testGetUsersByBirthDateBetween() {
-        LocalDate fromDate = LocalDate.of(1990, 1, 1);
-        LocalDate toDate = LocalDate.of(2000, 12, 31);
+    @Transactional
+    @Rollback(true)
+    public void testDeleteUser() throws Exception {
+        Long userIdToDelete = 1L;
+        mockMvc.perform(delete("/api/v1/users/{id}", userIdToDelete))
+                .andExpect(status().isNoContent());
+    }
 
-        List<User> users = new ArrayList<>();
-        User user1 = new User();
-        user1.setId(1L);
-        user1.setEmail("user1@gmail.com");
-        user1.setFirstName("John");
-        user1.setLastName("Doe");
-        user1.setBirthdate(LocalDate.of(1995, 5, 15));
+    @Test
+    public void testGetUsersByBirthDateBetweenIsOk() throws Exception {
+        LocalDate fromDate = LocalDate.parse("1990-01-01");
+        LocalDate toDate = LocalDate.parse("2000-12-31");
 
-        List<UserResponse> userResponses = new ArrayList<>();
-        UserResponse userResponse1 = new UserResponse();
-        userResponse1.setId(1L);
-        userResponse1.setEmail("user1@gmail.com");
-        userResponse1.setFirstName("John");
-        userResponse1.setLastName("Doe");
-        userResponse1.setBirthdate(LocalDate.of(1995, 5, 15));
+        mockMvc.perform(get("/api/v1/users/by-dates")
+                        .param("fromDate", fromDate.toString())
+                        .param("toDate", toDate.toString()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", hasSize(greaterThanOrEqualTo(1))));
+    }
 
-        when(userService.findByBirthDateBetween(fromDate, toDate)).thenReturn(users);
-        when(userMapper.toDto(any(User.class))).thenReturn(userResponse1);
+    @Test
+    public void testGetUsersByBirthDateBetweenAreWrong() throws Exception {
+        LocalDate fromDate = LocalDate.parse("1990-01-01");
+        LocalDate toDate = LocalDate.parse("1400-12-31");
 
-        ResponseEntity<List<UserResponse>> responseEntity = userController.getUsersByBirthDateBetween(fromDate, toDate);
-
-        assertEquals(HttpStatus.OK, responseEntity.getStatusCode());
-        assertEquals(userResponses, responseEntity.getBody());
-        verify(userService).findByBirthDateBetween(fromDate, toDate);
-        verify(userMapper, times(users.size())).toDto(any(User.class));
+        mockMvc.perform(get("/api/v1/users/by-dates")
+                        .param("fromDate", fromDate.toString())
+                        .param("toDate", toDate.toString()))
+                .andExpect(status().isPreconditionFailed());
     }
 }

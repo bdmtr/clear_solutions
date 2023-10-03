@@ -1,5 +1,6 @@
 package bdmtr.github.clearsolutionstesttask.service;
 
+import bdmtr.github.clearsolutionstesttask.exception.IncorrectDateException;
 import bdmtr.github.clearsolutionstesttask.exception.UserNotFoundException;
 import bdmtr.github.clearsolutionstesttask.model.entity.User;
 import bdmtr.github.clearsolutionstesttask.model.repository.UserRepository;
@@ -22,6 +23,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<User> findByBirthDateBetween(LocalDate fromDate, LocalDate toDate) {
+        if (toDate.isBefore(fromDate)) {
+            throw new IncorrectDateException("End date: " + toDate + " is before start date " + fromDate);
+        }
+
         return userRepository.findByBirthdateBetween(fromDate, toDate);
     }
 

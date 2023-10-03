@@ -31,6 +31,17 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
     }
 
+    @ExceptionHandler(IncorrectDateException.class)
+    public ResponseEntity<Object> handleIncorrectDataException(IncorrectDateException exception) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("timestamp", LocalDateTime.now());
+        body.put("status", HttpStatus.PRECONDITION_FAILED.value());
+        body.put("description", HttpStatus.PRECONDITION_FAILED.toString());
+        body.put("details", "End search date cant be before start search date.  " + exception.getMessage());
+        return ResponseEntity.status(HttpStatus.PRECONDITION_FAILED).body(body);
+    }
+
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, @NotNull HttpHeaders headers, HttpStatusCode status, @NotNull WebRequest request) {
         Map<String, Object> body = new LinkedHashMap<>();

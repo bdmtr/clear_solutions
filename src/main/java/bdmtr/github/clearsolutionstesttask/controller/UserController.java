@@ -34,10 +34,10 @@ public class UserController {
         this.userMapper = userMapper;
     }
 
-    @PostMapping(path = "/add")
+    @PostMapping(path = "/")
     @Operation(description = "Add a new user")
     @ApiResponses(value = {@ApiResponse(responseCode = "201", description = "User successfully created")})
-    public ResponseEntity<UserResponse> register(@RequestBody @Valid UserRequest userRequest) {
+    public ResponseEntity<UserResponse> addNewUser(@RequestBody @Valid UserRequest userRequest) {
         User user = userService.save(userMapper.toModel(userRequest));
         UserResponse userResponse = userMapper.toDto(user);
         return ResponseEntity.status(HttpStatus.CREATED).body(userResponse);
@@ -69,8 +69,8 @@ public class UserController {
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body(null);
     }
 
-    @GetMapping("/dates")
-    @Operation(description = "Search for users by birthdate range")
+    @GetMapping("/by-dates")
+    @Operation(description = "Search for users by birthdate range. End date cant be before date.")
     public ResponseEntity<List<UserResponse>> getUsersByBirthDateBetween(
             @RequestParam(name = "fromDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fromDate,
             @RequestParam(name = "toDate") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate toDate) {
